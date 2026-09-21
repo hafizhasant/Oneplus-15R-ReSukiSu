@@ -148,15 +148,7 @@ jobs:
             # OnePlus 15 == 15T (sm8850, same GKI branch/config) and 15R == Ace 6T
             # (sm8845) produce byte-identical Images, so we build each unique kernel
             # once and label the ZIP for both devices instead of compiling twice.
-<<<<<<< HEAD
-<<<<<<< HEAD
             MATRIX='{"include":[{"id":"oneplus15","name":"OnePlus 15 / 15T","codename":"Infinity","cpu":"sm8850","branch":"android16-6.12-2025-06","safe_name":"OnePlus15-15T"},{"id":"oneplus15r","name":"OnePlus 15R / Ace 6T","codename":"macan","cpu":"sm8845","branch":"android16-6.12-2025-09","safe_name":"OnePlus15R-Ace6T"}]}'
-=======
-            MATRIX='{"include":[{"id":"oneplus15","name":"OnePlus 15 / 15T","codename":"Infinity","cpu":"sm8850","branch":"android16-6.12-2025-06","safe_name":"OnePlus15-15T"},{"id":"oneplus15r","name":"OnePlus 15R / Ace 6T","codename":"macan","cpu":"sm8845","branch":"android16-6.12-2025-12","safe_name":"OnePlus15R-Ace6T"}]}'
->>>>>>> 0be494e (oneplus15r: codename Infinity -> macan)
-=======
-            MATRIX='{"include":[{"id":"oneplus15","name":"OnePlus 15 / 15T","codename":"Infinity","cpu":"sm8850","branch":"android16-6.12-2025-06","safe_name":"OnePlus15-15T"},{"id":"oneplus15r","name":"OnePlus 15R / Ace 6T","codename":"macan","cpu":"sm8845","branch":"android16-6.12-2025-12","safe_name":"OnePlus15R-Ace6T"}]}'
->>>>>>> 0be494e (oneplus15r: codename Infinity -> macan)
           else
             case "${{ inputs.DEVICE }}" in
               oneplus15)
@@ -166,15 +158,7 @@ jobs:
                 MATRIX='{"include":[{"id":"oneplus15t","name":"OnePlus 15T","codename":"Infinity","cpu":"sm8850","branch":"android16-6.12-2025-06","safe_name":"OnePlus15T"}]}'
                 ;;
               oneplus15r)
-<<<<<<< HEAD
-<<<<<<< HEAD
                 MATRIX='{"include":[{"id":"oneplus15r","name":"OnePlus 15R","codename":"macan","cpu":"sm8845","branch":"android16-6.12-2025-09","safe_name":"OnePlus15R"}]}'
-=======
-                MATRIX='{"include":[{"id":"oneplus15r","name":"OnePlus 15R","codename":"macan","cpu":"sm8845","branch":"android16-6.12-2025-12","safe_name":"OnePlus15R"}]}'
->>>>>>> 0be494e (oneplus15r: codename Infinity -> macan)
-=======
-                MATRIX='{"include":[{"id":"oneplus15r","name":"OnePlus 15R","codename":"macan","cpu":"sm8845","branch":"android16-6.12-2025-12","safe_name":"OnePlus15R"}]}'
->>>>>>> 0be494e (oneplus15r: codename Infinity -> macan)
                 ;;
               ace6t)
                 MATRIX='{"include":[{"id":"ace6t","name":"OnePlus Ace 6T","codename":"Infinity","cpu":"sm8845","branch":"android16-6.12-2025-09","safe_name":"Ace6T"}]}'
