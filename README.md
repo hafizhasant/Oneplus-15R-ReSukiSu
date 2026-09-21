@@ -20,7 +20,7 @@ It syncs Android GKI sources, adds **ReSukiSU**, optionally applies **SUSFS**, a
 > This builder produces a **generic GKI** `kernel_aarch64` Image, so the device
 > only selects the GKI branch and the ZIP name — devices sharing a branch get an
 > identical Image. `sm8850` (OP15 / 15T / Pad 3 Pro / Pad 4) builds from
-> `android16-6.12-2025-06`; `sm8845` (15R / Ace 6T) from `android16-6.12-2025-09`.
+> `android16-6.12-2025-06`; `sm8845` (15R / Ace 6T) from `android16-6.12-2025-12`.
 > `DEVICE=all` therefore compiles just those two unique kernels.
 
 ---
@@ -83,7 +83,7 @@ SUSFS disabled:
 
 > Building `DEVICE=all` compiles each **unique** kernel once — OnePlus 15 and 15T
 > share `sm8850`/`android16-6.12-2025-06`, while 15R and Ace 6T share
-> `sm8845`/`android16-6.12-2025-09` — so you get two ZIPs (`OnePlus15-15T`,
+> `sm8845`/`android16-6.12-2025-12` — so you get two ZIPs (`OnePlus15-15T`,
 > `OnePlus15R-Ace6T`), each flashable on both of its devices.
 
 ---
