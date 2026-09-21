@@ -12,7 +12,7 @@ It syncs Android GKI sources, adds **ReSukiSU**, optionally applies **SUSFS**, a
 |---|---|---|---|
 | OnePlus 15 | `oneplus15` | `Infinity` | `sm8850` |
 | OnePlus 15T | `oneplus15t` | `Infinity` | `sm8850` |
-| OnePlus 15R | `oneplus15r` | `Infinity` | `sm8845` |
+| OnePlus 15R | `oneplus15r` | `macan` | `sm8845` |
 | OnePlus Ace 6T | `ace6t` | `Infinity` | `sm8845` |
 | OnePlus Pad 3 Pro | `pad3pro` | `canoe` | `sm8850` |
 | OnePlus Pad 4 | `pad4` | `canoe` | `sm8850` |
