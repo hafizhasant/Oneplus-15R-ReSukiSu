@@ -80,6 +80,12 @@ on:
         required: true
         default: true
 
+      BOEFFLA_WL_BLOCKER:
+        type: boolean
+        description: "🔇 Boeffla wakelock blocker (sysfs list, empty by default)"
+        required: true
+        default: false
+
       ADIOS:
         type: boolean
         description: "💾 Add ADIOS block MQ I/O scheduler (and make it the default)"
@@ -1035,6 +1041,32 @@ jobs:
 
           echo "DURATION_BBR3=$(($(date +%s) - STEP_START))s" >> "$GITHUB_ENV"
           echo "✅ BBRv3 applied from Bouteillepleine/kernel_patches"
+
+      - name: Apply Boeffla wakelock blocker
+        if: ${{ inputs.BOEFFLA_WL_BLOCKER }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          STEP_START=$(date +%s)
+
+          PATCH_FILE="${GITHUB_WORKSPACE}/patches/experimental/boeffla_wl_blocker.patch"
+          cd "${GITHUB_WORKSPACE}/kernel_workspace/common"
+
+          if grep -q "check_for_block" drivers/base/power/wakeup.c 2>/dev/null; then
+            echo "⏭️ Boeffla wakelock blocker already present — skipping patch"
+          elif [ ! -f "$PATCH_FILE" ]; then
+            echo "::error::Boeffla wakelock blocker patch not found at $PATCH_FILE"
+            exit 1
+          else
+            if patch -p1 --dry-run --ignore-whitespace -F 3 < "$PATCH_FILE" >/dev/null 2>&1; then
+              patch -p1 --ignore-whitespace -F 3 < "$PATCH_FILE"
+              echo "✅ Boeffla wakelock blocker applied"
+            else
+              echo "⚠️ Boeffla wakelock blocker patch did not apply on ${KERNEL_BRANCH:-this branch} — skipping"
+            fi
+          fi
+
+          echo "DURATION_WLB=$(($(date +%s) - STEP_START))s" >> "$GITHUB_ENV"
 
       - name: Add ADIOS I/O Scheduler
         if: ${{ inputs.ADIOS }}
