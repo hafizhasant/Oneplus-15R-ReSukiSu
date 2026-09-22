@@ -205,6 +205,7 @@ jobs:
       BBR_ECN_ENABLED: ${{ inputs.BBR_ECN && '1' || '0' }}
       BBR3_ENABLED: ${{ inputs.BBR3 && '1' || '0' }}
       ADIOS_ENABLED: ${{ inputs.ADIOS && '1' || '0' }}
+      BOEFFLA_WL_BLOCKER_ENABLED: ${{ inputs.BOEFFLA_WL_BLOCKER && '1' || '0' }}
       UNICODE_BYPASS_ENABLED: ${{ inputs.UNICODE_BYPASS && '1' || '0' }}
       XUS_FIX_ENABLED: ${{ inputs.XUS_FIX && '1' || '0' }}
       SUSFS_DEV_ENABLED: ${{ inputs.SUSFS_DEV && '1' || '0' }}
@@ -1257,6 +1258,11 @@ jobs:
             echo "# === Block MQ I/O scheduler (ADIOS) ===" >> "$CONFIG_FILE"
             force_config "CONFIG_MQ_IOSCHED_ADIOS=y"
             force_config "CONFIG_MQ_IOSCHED_DEFAULT_ADIOS=y"
+          fi
+
+          if [ "${BOEFFLA_WL_BLOCKER_ENABLED}" = "1" ]; then
+            echo "# === Boeffla wakelock blocker ===" >> "$CONFIG_FILE"
+            force_config "CONFIG_BOEFFLA_WL_BLOCKER=y"
           fi
 
           if [[ "$CPU" == sm* && "${NETFILTER_ENABLED}" = "1" ]]; then
