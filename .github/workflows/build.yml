@@ -1095,6 +1095,24 @@ jobs:
 
           echo "DURATION_WLB=$(($(date +%s) - STEP_START))s" >> "$GITHUB_ENV"
 
+      - name: Fix wakeup forward decl (WL blocker on 6.12)
+        if: ${{ inputs.BOEFFLA_WL_BLOCKER }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          WAKEUP=common/drivers/base/power/wakeup.c
+          if [ ! -f "$WAKEUP" ]; then
+            echo "⚠️ $WAKEUP not found — skipping"
+            exit 0
+          fi
+          if grep -q '^static void wakeup_source_deactivate(struct wakeup_source \*ws);$' "$WAKEUP"; then
+            echo "⏭️ forward decl already present — skipping"
+            exit 0
+          fi
+          sed -i '/^static void wakeup_source_activate(struct wakeup_source \*ws)$/i static void wakeup_source_deactivate(struct wakeup_source *ws);' "$WAKEUP"
+          echo "✅ forward-declared wakeup_source_deactivate"
+          grep -n 'wakeup_source_deactivate(struct wakeup_source \*ws);' "$WAKEUP"
+
       - name: Add ADIOS I/O Scheduler
         if: ${{ inputs.ADIOS }}
         shell: bash
