@@ -1113,6 +1113,12 @@ jobs:
           sed -i '/^static void wakeup_source_activate(struct wakeup_source \*ws)$/i static void wakeup_source_deactivate(struct wakeup_source *ws);' "$WAKEUP"
           echo "✅ forward-declared wakeup_source_deactivate"
           grep -n 'wakeup_source_deactivate(struct wakeup_source \*ws);' "$WAKEUP"
+          BLOCKER=common/drivers/base/power/boeffla_wl_blocker.c
+          if [ -f "$BLOCKER" ] && grep -q '^extern char list_wl_search\[LENGTH_LIST_WL_SEARCH\];$' "$BLOCKER"; then
+            sed -i 's|^extern char list_wl_search\[LENGTH_LIST_WL_SEARCH\];$|char list_wl_search[LENGTH_LIST_WL_SEARCH] = {0};|' "$BLOCKER"
+            echo "✅ defined list_wl_search in $BLOCKER"
+            grep -n '^char list_wl_search' "$BLOCKER"
+          fi
 
       - name: Add ADIOS I/O Scheduler
         if: ${{ inputs.ADIOS }}
