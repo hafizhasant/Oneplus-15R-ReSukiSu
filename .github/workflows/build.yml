@@ -1100,6 +1100,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          cd kernel_workspace
           WAKEUP=common/drivers/base/power/wakeup.c
           if [ ! -f "$WAKEUP" ]; then
             echo "⚠️ $WAKEUP not found — skipping"
