@@ -85,15 +85,6 @@ It syncs Android GKI sources, adds **ReSukiSU**, optionally applies **SUSFS**, a
 
 ---
 
-## 🔧 Kernel Build Notes (Boeffla WL Blocker on 6.12)
-
-The upstream Boeffla wakelock blocker patch needed two compile fixes to build on kernel 6.12. These are applied automatically by the workflow after the blocker is patched, and are idempotent:
-
-1. **Forward declaration of `wakeup_source_deactivate`** in `common/drivers/base/power/wakeup.c` — the blocker calls it before its definition, which fails clang 18+ with `-Wimplicit-function-declaration`.
-2. **Definition of `list_wl_search`** in `common/drivers/base/power/boeffla_wl_blocker.c` — the original patch only declares it `extern`, causing an undefined-symbol link error.
-
-No manual intervention is required — the fixes only run when `BOEFFLA_WL_BLOCKER` is enabled.
-
 ---
 
 ## 📦 Output
