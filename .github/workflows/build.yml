@@ -89,6 +89,12 @@ on:
         default: true
 
       SULTAN_TWEAKS:
+
+      GKID_PATCHES:
+        type: boolean
+        description: "⚡ GKID misc patches (F2FS GC, freezer timeout, mem-op, log silence)"
+        required: true
+        default: true
         type: boolean
         description: "🍃 Sultan-derived power/memory tweaks (WildKernels patches, dry-run checked)"
         required: true
@@ -190,6 +196,7 @@ jobs:
       BBR3_ENABLED: ${{ inputs.BBR3 && '1' || '0' }}
       ADIOS_ENABLED: ${{ inputs.ADIOS && '1' || '0' }}
       BOEFFLA_WL_BLOCKER_ENABLED: ${{ inputs.BOEFFLA_WL_BLOCKER && '1' || '0' }}
+      GKID_PATCHES_ENABLED: ${{ inputs.GKID_PATCHES && '1' || '0' }}
       UNICODE_BYPASS_ENABLED: ${{ inputs.UNICODE_BYPASS && '1' || '0' }}
       XUS_FIX_ENABLED: ${{ inputs.XUS_FIX && '1' || '0' }}
       SUSFS_DEV_ENABLED: ${{ inputs.SUSFS_DEV && '1' || '0' }}
@@ -1106,6 +1113,7 @@ jobs:
 
 
       - name: Apply GKID misc patches
+        if: ${{ inputs.GKID_PATCHES }}
         shell: bash
         run: |
           set -euo pipefail
