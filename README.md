@@ -1,6 +1,6 @@
-# 🚀 OnePlus ReSukiSU Kernel Builder
+# 🚀 OnePlus 15 / 15R ReSukiSU Kernel Builder
 
-GitHub Actions workflow for building flashable **ReSukiSU GKI kernels** for supported OnePlus devices.
+GitHub Actions workflow for building flashable **ReSukiSU GKI kernels** for the **OnePlus 15** and **OnePlus 15R**.
 
 It syncs Android GKI sources, adds **ReSukiSU**, optionally applies **SUSFS**, and packages the result as an **AnyKernel3 ZIP**.
 
@@ -8,20 +8,12 @@ It syncs Android GKI sources, adds **ReSukiSU**, optionally applies **SUSFS**, a
 
 ## 📱 Supported Devices
 
-| Device | ID | Codename | SoC |
-|---|---|---|---|
-| OnePlus 15 | `oneplus15` | `Infinity` | `sm8850` |
-| OnePlus 15T | `oneplus15t` | `Infinity` | `sm8850` |
-| OnePlus 15R | `oneplus15r` | `macan` | `sm8845` |
-| OnePlus Ace 6T | `ace6t` | `Infinity` | `sm8845` |
-| OnePlus Pad 3 Pro | `pad3pro` | `canoe` | `sm8850` |
-| OnePlus Pad 4 | `pad4` | `canoe` | `sm8850` |
+| Device | ID | Codename | SoC | GKI Branch |
+|---|---|---|---|---|
+| OnePlus 15 | `oneplus15` | `Infinity` | `sm8850` | `android16-6.12-2025-06` |
+| OnePlus 15R | `oneplus15r` | `macan` | `sm8845` | `android16-6.12-2025-12` |
 
-> This builder produces a **generic GKI** `kernel_aarch64` Image, so the device
-> only selects the GKI branch and the ZIP name — devices sharing a branch get an
-> identical Image. `sm8850` (OP15 / 15T / Pad 3 Pro / Pad 4) builds from
-> `android16-6.12-2025-06`; `sm8845` (15R / Ace 6T) from `android16-6.12-2025-12`.
-> `DEVICE=all` therefore compiles just those two unique kernels.
+> This builder produces a **generic GKI** `kernel_aarch64` Image, so the device only selects the GKI branch and the ZIP name. `DEVICE=all` compiles both branches — one Image for `sm8850`, one for `sm8845`.
 
 ---
 
@@ -29,16 +21,20 @@ It syncs Android GKI sources, adds **ReSukiSU**, optionally applies **SUSFS**, a
 
 - ReSukiSU integration
 - Optional SUSFS
-- Optional Baseband Guard / ✨LSM Do not enable as it does not work with 6.12 kernels !✨
 - Optional Netfilter + IPSet
 - Optional BBR + ECN
 - Optional BBRv3 backport (KMI-safe on android16-6.12)
 - Net schedulers built in: `fq`, `fq_codel`, `cake`
 - Optional ADIOS block MQ I/O scheduler
+- Optional Sultan kernel tweaks
+- Optional Boeffla wakelock blocker — **with 6.12 build fix included** (see below)
 - Optional Unicode bypass patch
+- MGLRU compiled in (`CONFIG_LRU_GEN=y` / `CONFIG_LRU_GEN_ENABLED=y`)
 - Flashable AnyKernel3 ZIP
 - GitHub Release or artifact output
 - Build logs, hashes, and summary
+
+> ⚠️ **LSM / Baseband Guard is not listed** — it does not work on 6.12 kernels.
 
 ---
 
@@ -56,35 +52,40 @@ It syncs Android GKI sources, adds **ReSukiSU**, optionally applies **SUSFS**, a
 
 | Option | Description |
 |---|---|
-| `DEVICE` | Device to build, or `all` |
+| `DEVICE` | `oneplus15`, `oneplus15r`, or `all` |
 | `KSU_META` | ReSukiSU source: `branch/tag/commit` |
 | `SUSFS_META` | Empty = latest, `-1` = disabled, hash = pinned |
-| `LSM` | Enable Baseband Guard | 
 | `NETFILTER` | Enable Netfilter/IPSet |
 | `BBR_ECN` | Enable BBR + ECN |
 | `BBR3` | Backport BBRv3 (patches `net/tcp`, adds `CONFIG_TCP_CONG_BBR3`) |
 | `ADIOS` | Add the ADIOS block MQ I/O scheduler and make it the default |
+| `SULTAN` | Apply Sultan-derived kernel tweaks |
+| `BOEFFLA_WL_BLOCKER` | Boeffla wakelock blocker — 6.12 build fix applied automatically |
 | `CREATE_RELEASE` | Publish ZIP to GitHub Releases |
+
+---
+
+## 🔧 Kernel Build Notes (Boeffla WL Blocker on 6.12)
+
+The upstream Boeffla wakelock blocker patch needed two compile fixes to build on kernel 6.12. These are applied automatically by the workflow after the blocker is patched, and are idempotent:
+
+1. **Forward declaration of `wakeup_source_deactivate`** in `common/drivers/base/power/wakeup.c` — the blocker calls it at line ~624 before its definition at line ~723, which fails clang 18+ with `-Wimplicit-function-declaration`.
+2. **Definition of `list_wl_search`** in `common/drivers/base/power/boeffla_wl_blocker.c` — the original patch only declares it `extern`, causing an undefined-symbol link error (`ld.lld: error: undefined symbol: list_wl_search`).
+
+No manual intervention is required — the fixes only run when `BOEFFLA_WL_BLOCKER` is enabled.
 
 ---
 
 ## 📦 Output
 
-Naming: `AK3_ReSukiSU_<ksuver>_<SUSFS-ver|noSUSFS>_<device>_<kernel>[_LSM].zip`
+Naming: `AK3_ReSukiSU_<ksuver>_<SUSFS-ver|noSUSFS>_<device>_<kernel>.zip`
 
-Example ZIP:
-`AK3_ReSukiSU_43000_SUSFS-1.5.9_OnePlus15_6.12.0.zip`
+Examples:
+- `AK3_ReSukiSU_43000_SUSFS-1.5.9_OnePlus15_6.12.0.zip`
+- `AK3_ReSukiSU_43000_SUSFS-1.5.9_OnePlus15R_6.12.0.zip`
+- `AK3_ReSukiSU_43000_noSUSFS_OnePlus15_6.12.0.zip`
 
-With LSM:
-`AK3_ReSukiSU_43000_SUSFS-1.5.9_OnePlus15_6.12.0_LSM.zip`
-
-SUSFS disabled:
-`AK3_ReSukiSU_43000_noSUSFS_OnePlus15_6.12.0.zip`
-
-> Building `DEVICE=all` compiles each **unique** kernel once — OnePlus 15 and 15T
-> share `sm8850`/`android16-6.12-2025-06`, while 15R and Ace 6T share
-> `sm8845`/`android16-6.12-2025-12` — so you get two ZIPs (`OnePlus15-15T`,
-> `OnePlus15R-Ace6T`), each flashable on both of its devices.
+> Building `DEVICE=all` compiles both unique kernels — one for `sm8850` (OnePlus 15) and one for `sm8845` (OnePlus 15R) — producing two ZIPs.
 
 ---
 
@@ -96,4 +97,4 @@ Use at your own risk. Keep a backup boot image and make sure fastboot/recovery a
 
 ## 🙏 Credits
 
-Thanks to the maintainers of Android GKI, ReSukiSU, SUSFS, AnyKernel3, Baseband Guard, and related community patches.
+Thanks to the maintainers of Android GKI, ReSukiSU, SUSFS, AnyKernel3, Boeffla wakelock blocker, Sultan kernel tweaks, and related community patches.
