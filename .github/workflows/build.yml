@@ -89,16 +89,16 @@ on:
         default: true
 
       SULTAN_TWEAKS:
+        type: boolean
+        description: "🍃 Sultan-derived power/memory tweaks (WildKernels patches, dry-run checked)"
+        required: true
+        default: false
 
       GKID_PATCHES:
         type: boolean
         description: "⚡ GKID misc patches (F2FS GC, freezer timeout, mem-op, log silence)"
         required: true
         default: true
-        type: boolean
-        description: "🍃 Sultan-derived power/memory tweaks (WildKernels patches, dry-run checked)"
-        required: true
-        default: false
 
       UNICODE_BYPASS:
         type: boolean
