@@ -19,20 +19,38 @@ It syncs Android GKI sources, adds **ReSukiSU**, optionally applies **SUSFS**, a
 
 ## ✨ Features
 
+### Core
 - ReSukiSU integration
 - Optional SUSFS
-- Optional Netfilter + IPSet
-- Optional BBR + ECN
-- Optional BBRv3 backport (KMI-safe on android16-6.12)
-- Net schedulers built in: `fq`, `fq_codel`, `cake`
-- Optional ADIOS block MQ I/O scheduler
-- Optional Sultan kernel tweaks
-- Optional Boeffla wakelock blocker — **with 6.12 build fix included** (see below)
-- Optional Unicode bypass patch
-- MGLRU compiled in (`CONFIG_LRU_GEN=y` / `CONFIG_LRU_GEN_ENABLED=y`)
+- Optional Sultan-derived power/memory tweaks (WildKernels patches, dry-run checked)
+- Optional Unicode invisible-codepoint bypass patch
 - Flashable AnyKernel3 ZIP
 - GitHub Release or artifact output
-- Build logs, hashes, and summary
+
+### Networking
+- Optional Netfilter + IPSet
+- Optional BBR + ECN
+- Optional BBRv3 backport (KMI-safe on `android16-6.12`)
+- Net schedulers built in: `fq`, `fq_codel`, `cake`
+- IPv6 NAT fix
+
+### Scheduler & I/O
+- Optional ADIOS block MQ I/O scheduler (default)
+- MGLRU compiled in (`CONFIG_LRU_GEN=y` / `CONFIG_LRU_GEN_ENABLED=y`)
+
+### Battery & Thermal
+- Optional Boeffla wakelock blocker — **with 6.12 build fix included**
+
+### GKID misc patches (optional, toggleable)
+- F2FS GC urgent sleep reduced to 50 ms
+- F2FS `min_fsync_blocks` enlarged to 20
+- Freezer timeout reduced to 1 s
+- ext4 default commit age increased
+- ARM64 memory-op optimizations (memcpy / memset / memcmp)
+- `lib/string.c` optimized mem operations
+- Alarmtimer wake minimization
+- IRQ log spam silence
+- printk spam silence
 
 > ⚠️ **LSM / Baseband Guard is not listed** — it does not work on 6.12 kernels.
 
@@ -45,6 +63,7 @@ It syncs Android GKI sources, adds **ReSukiSU**, optionally applies **SUSFS**, a
 3. Run the workflow
 4. Select your device and options
 5. Download the generated ZIP
+6. Flash via KernelSU / Magisk / recovery
 
 ---
 
@@ -59,9 +78,21 @@ It syncs Android GKI sources, adds **ReSukiSU**, optionally applies **SUSFS**, a
 | `BBR_ECN` | Enable BBR + ECN |
 | `BBR3` | Backport BBRv3 (patches `net/tcp`, adds `CONFIG_TCP_CONG_BBR3`) |
 | `ADIOS` | Add the ADIOS block MQ I/O scheduler and make it the default |
-| `SULTAN` | Apply Sultan-derived kernel tweaks |
 | `BOEFFLA_WL_BLOCKER` | Boeffla wakelock blocker — 6.12 build fix applied automatically |
+| `SULTAN_TWEAKS` | Sultan-derived power/memory tweaks |
+| `GKID_PATCHES` | GKID misc patches (F2FS GC, freezer timeout, mem-op, ext4 commit, log silence) |
 | `CREATE_RELEASE` | Publish ZIP to GitHub Releases |
+
+---
+
+## 🔧 Kernel Build Notes (Boeffla WL Blocker on 6.12)
+
+The upstream Boeffla wakelock blocker patch needed two compile fixes to build on kernel 6.12. These are applied automatically by the workflow after the blocker is patched, and are idempotent:
+
+1. **Forward declaration of `wakeup_source_deactivate`** in `common/drivers/base/power/wakeup.c` — the blocker calls it before its definition, which fails clang 18+ with `-Wimplicit-function-declaration`.
+2. **Definition of `list_wl_search`** in `common/drivers/base/power/boeffla_wl_blocker.c` — the original patch only declares it `extern`, causing an undefined-symbol link error.
+
+No manual intervention is required — the fixes only run when `BOEFFLA_WL_BLOCKER` is enabled.
 
 ---
 
@@ -74,8 +105,6 @@ Examples:
 - `AK3_ReSukiSU_43000_SUSFS-1.5.9_OnePlus15R_6.12.0.zip`
 - `AK3_ReSukiSU_43000_noSUSFS_OnePlus15_6.12.0.zip`
 
-> Building `DEVICE=all` compiles both unique kernels — one for `sm8850` (OnePlus 15) and one for `sm8845` (OnePlus 15R) — producing two ZIPs.
-
 ---
 
 ## ⚠️ Notice
@@ -86,4 +115,17 @@ Use at your own risk. Keep a backup boot image and make sure fastboot/recovery a
 
 ## 🙏 Credits
 
-Thanks to the maintainers of Android GKI, ReSukiSU, SUSFS, AnyKernel3, Boeffla wakelock blocker, Sultan kernel tweaks, and related community patches.
+This project is a build orchestration layer. The actual kernel code comes from the following upstreams — **all credit goes to their maintainers**:
+
+- **Google / AOSP** — Android GKI kernel (`android16-6.12`)
+- **ReSukiSU** — KernelSU fork used as the root solution
+- **SUSFS (simonpunk)** — Kernel-based root-hiding filesystem patches
+- **Boeffla (andip71)** — Wakelock blocker driver
+- **GKID-Kernels (ahmed-alnassif)** — Misc kernel patches (F2FS, freezer, mem-op, log silence)
+- **WildKernels** — Sultan-derived tweaks
+- **Numbersf** — Reference for GKI build workflows and scheduler patches
+- **AnyKernel3 (osm0sis)** — Flashable zip template
+- **BBRv3** — Congestion control backport
+- **ADIOS** — Block MQ I/O scheduler
+
+If you authored any of the patches included here and would like attribution changed, open an issue or PR.

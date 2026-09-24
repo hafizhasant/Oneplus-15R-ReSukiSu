@@ -1795,6 +1795,7 @@ jobs:
             ${{ inputs.SUSFS_META == '-1' && '[noSUSFS]' || '' }}
           body: |
             ## 📦 ${{ env.DEVICE_NAME }} ReSukiSU Kernel
+
             | Property | Value |
             |----------|-------|
             | Device | ${{ env.DEVICE_NAME }} |
@@ -1805,21 +1806,63 @@ jobs:
             | KSU Commit | `${{ env.KSU_COMMIT_SHA }}` |
             | SUSFS Enabled | `${{ inputs.SUSFS_META != '-1' && 'Yes' || 'No' }}` |
             | SUSFS Version | `${{ env.SUSVER }}` |
-            | SUSFS Version Source | `${{ env.SUSFS_VERSION_SOURCE }}` |
             | SUSFS Branch | `${{ env.SUSFS_BRANCH_NAME }}` |
             | SUSFS Commit | `${{ env.SUSFS_COMMIT_SHA }}` |
-            | SUSFS Short Commit | `${{ env.SUSFS_SHORT_SHA }}` |
             | Branch | `common-${{ env.KERNEL_BRANCH }}` |
             | Build threads | `${{ env.BUILD_THREADS || 'Auto' }}` |
             | Build run | [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) |
-            ### Features
+
+            ### ✨ Features
+
             - BBR + ECN: `${{ inputs.BBR_ECN }}`
-            - BBRv3: `${{ inputs.BBR3 }}`
+            - BBRv3 backport: `${{ inputs.BBR3 }}`
             - ADIOS I/O scheduler: `${{ inputs.ADIOS }}`
             - Netfilter / IPSet: `${{ inputs.NETFILTER }}`
-            - Baseband Guard: `${{ inputs.LSM }}`
+            - IPv6 NAT: `Enabled`
+            - Boeffla wakelock blocker: `${{ inputs.BOEFFLA_WL_BLOCKER }}`
+            - Sultan tweaks: `${{ inputs.SULTAN_TWEAKS }}`
+            - GKID misc patches: `${{ inputs.GKID_PATCHES }}`
             - Unicode Bypass: `${{ inputs.UNICODE_BYPASS }}`
             - SUSFS: `${{ inputs.SUSFS_META != '-1' && 'Enabled' || 'Disabled' }}`
+            - MGLRU: `Compiled in`
+
+            ### 🧩 Runtime tuning (post-flash)
+
+            Boot scripts in `/data/adb/service.d/` enable:
+
+            - **MGLRU** + `min_ttl_ms=2000`
+            - **GPU cap** — 891 MHz (power level 6)
+            - **Wakelock blocker** — 8 entries (`qcom_rx_wakelock`, `wlan_wow_wl`, `wlan_extscan_wl`, `NETLINK`, `IPA_WS`, `scan_wake_lock`, `rmnet_ctl`, `RMNET_SHS`)
+            - **TCP** congestion → `bbr3`
+
+            See the repository README for the exact scripts.
+
+            ### 📥 Installation
+
+            1. Download `${{ env.ZIP_NAME }}` below
+            2. Reboot to recovery or open KernelSU / Magisk Manager
+            3. Flash the ZIP
+            4. Reboot
+
+            ### ⚠️ Notes
+
+            - Keep a backup boot image before flashing
+            - Ensure fastboot / recovery access in case of issues
+
+            ### 🙏 Credits
+
+            All kernel code belongs to its upstream authors:
+
+            - **Google / AOSP** — Android GKI kernel
+            - **ReSukiSU** — KernelSU fork used as the root solution
+            - **SUSFS (simonpunk)** — root-hiding filesystem patches
+            - **Boeffla (andip71)** — wakelock blocker driver
+            - **GKID-Kernels (ahmed-alnassif)** — misc kernel patches (F2FS, freezer, mem-op, log silence)
+            - **WildKernels** — Sultan-derived tweaks
+            - **AnyKernel3 (osm0sis)** — flashable zip template
+            - **BBRv3**, **ADIOS** — congestion control and I/O scheduler backports
+
+            See the repository README for the full credits list.
           files: ${{ env.ZIP_NAME }}
           fail_on_unmatched_files: true
         env:
