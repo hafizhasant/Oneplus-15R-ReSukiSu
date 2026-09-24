@@ -1104,6 +1104,21 @@ jobs:
             grep -n '^char list_wl_search' "$BLOCKER"
           fi
 
+
+      - name: Apply GKID misc patches
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd kernel_workspace/common
+          for p in "${GITHUB_WORKSPACE}"/patches/gkid/*.patch; do
+            [ -f "$p" ] || continue
+            echo "→ $(basename "$p")"
+            if patch -p1 --forward --ignore-whitespace -F 3 < "$p"; then
+              echo "  ✅ applied"
+            else
+              echo "  ⚠️ skipped (did not apply)"
+            fi
+          done
       - name: Add ADIOS I/O Scheduler
         if: ${{ inputs.ADIOS }}
         shell: bash
