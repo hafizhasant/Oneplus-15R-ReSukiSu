@@ -1,4 +1,4 @@
-name: OnePlus 15 / 15T / 15R / Ace6T / Pad 3 Pro / Pad 4
+name: OnePlus 15 / 15R — ReSukiSU Kernel Builder
 
 on:
   workflow_dispatch:
