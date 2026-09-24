@@ -13,6 +13,7 @@
 - Netfilter + IPSet
 - IPv6 NAT
 - Sultan-derived power/memory tweaks
+- MGLRU compiled in
 - GKID misc patches:
   - F2FS GC urgent sleep → 50 ms
   - F2FS `min_fsync_blocks` → 20
@@ -22,7 +23,6 @@
   - `lib/string.c` optimizations
   - Alarmtimer wake minimization
   - IRQ + printk log silence
-- MGLRU compiled in
 
 ### 🧩 Runtime tuning (apply after flash)
 See README for the boot scripts that enable:

@@ -36,6 +36,8 @@ It syncs Android GKI sources, adds **ReSukiSU**, optionally applies **SUSFS**, a
 
 ### Scheduler & I/O
 - Optional ADIOS block MQ I/O scheduler (default)
+
+### Memory
 - MGLRU compiled in (`CONFIG_LRU_GEN=y` / `CONFIG_LRU_GEN_ENABLED=y`)
 
 ### Battery & Thermal
