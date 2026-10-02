@@ -1,6 +1,13 @@
 name: SCX-LAVD Android arm64 Test Module
 
-on: [workflow_dispatch]
+on:
+  workflow_dispatch:
+    inputs:
+      SCX_REF:
+        description: "sched-ext/scx git branch, tag, or commit"
+        required: true
+        default: "main"
+
 permissions:
   contents: write
 
@@ -56,7 +63,7 @@ jobs:
         run: |
           set -euo pipefail
           git clone --recursive --depth=1 \
-            --branch "main" \
+            --branch "${{ inputs.SCX_REF }}" \
             https://github.com/sched-ext/scx.git scx
 
           cd scx
