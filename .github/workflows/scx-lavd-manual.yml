@@ -1,4 +1,4 @@
-name: SCX-LAVD Android arm64 Test Module
+name: SCX-LAVD Manual Build v2
 
 on: [workflow_dispatch]
 permissions:
