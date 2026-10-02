@@ -1435,6 +1435,28 @@ jobs:
             exit 1
           fi
 
+      - name: Set schedutil as default CPUFreq governor
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          DEFCONFIG="kernel_workspace/common/arch/arm64/configs/gki_defconfig"
+
+          if [ ! -f "$DEFCONFIG" ]; then
+            echo "ERROR: GKI defconfig not found: $DEFCONFIG"
+            exit 1
+          fi
+
+          sed -i             -e '/^CONFIG_CPU_FREQ_DEFAULT_GOV_SCHEDUTIL=/d'             -e '/^# CONFIG_CPU_FREQ_DEFAULT_GOV_SCHEDUTIL is not set$/d'             -e '/^CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE=/d'             -e '/^# CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE is not set$/d'             -e '/^CONFIG_CPU_FREQ_GOV_SCHEDUTIL=/d'             -e '/^# CONFIG_CPU_FREQ_GOV_SCHEDUTIL is not set$/d'             "$DEFCONFIG"
+
+          {
+            echo 'CONFIG_CPU_FREQ_GOV_SCHEDUTIL=y'
+            echo 'CONFIG_CPU_FREQ_DEFAULT_GOV_SCHEDUTIL=y'
+          } >> "$DEFCONFIG"
+
+          echo "CPUFreq governor configuration:"
+          grep -nE 'CPU_FREQ_(DEFAULT_GOV|GOV_SCHEDUTIL)' "$DEFCONFIG" || true
+
       - name: Normalize GKI Defconfig for Kleaf
         shell: bash
         run: |
