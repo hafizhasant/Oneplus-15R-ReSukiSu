@@ -173,6 +173,22 @@ sleep 5
 log "scx_lavd PID: $(cat "$PIDFILE" 2>/dev/null)"
 log "sched_ext after start: $(cat /sys/kernel/sched_ext/state 2>/dev/null)"
 log "sched_ext rejected: $(cat /sys/kernel/sched_ext/nr_rejected 2>/dev/null)"
+
+if [ "$(cat /sys/kernel/sched_ext/state 2>/dev/null)" != "enabled" ]; then
+  log "ERROR: scx_lavd did not enable sched_ext; stopping it and restoring WALT"
+  kill "$(cat "$PIDFILE" 2>/dev/null)" 2>/dev/null || true
+  rm -f "$PIDFILE"
+
+  for policy in /sys/devices/system/cpu/cpufreq/policy*; do
+    if [ -w "$policy/scaling_governor" ]; then
+      echo walt > "$policy/scaling_governor" 2>/dev/null || true
+      log "$(basename "$policy") restored: $(cat "$policy/scaling_governor" 2>/dev/null)"
+    fi
+  done
+  exit 0
+fi
+
+log "SUCCESS: scx_lavd is active with schedutil selected"
 SH
           chmod 0755 "$MOD/service.sh"
 
