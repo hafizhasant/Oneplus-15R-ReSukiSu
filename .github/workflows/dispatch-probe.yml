@@ -1,0 +1,11 @@
+name: Actions Dispatch Probe
+
+on:
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm workflow dispatch
+        run: echo "workflow_dispatch is working"
