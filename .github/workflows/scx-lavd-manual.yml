@@ -1,8 +1,6 @@
 name: SCX-LAVD Manual Build v2
 
 on: [workflow_dispatch]
-permissions:
-  contents: write
 
 jobs:
   build:
