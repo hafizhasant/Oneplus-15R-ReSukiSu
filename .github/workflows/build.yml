@@ -1455,7 +1455,7 @@ jobs:
           } >> "$DEFCONFIG"
 
           echo "CPUFreq governor configuration:"
-          grep -nE 'CPU_FREQ_(DEFAULT_GOV|GOV_SCHEDUTIL)' "$DEFCONFIG" || true
+          grep -nE 'CPU_FREQ_(DEFAULT_GOV|GOV_SCHEDUTIL)|ENERGY_MODEL|UCLAMP|SCHED_WALT' "$DEFCONFIG" || true
 
       - name: Normalize GKI Defconfig for Kleaf
         shell: bash
